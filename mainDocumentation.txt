@@ -1,0 +1,37 @@
+
+1. in lines 56 & 57 we set the sizes to 4096 so we can make sure that the prohibited squares is within the range because we have 64 squares to the power 2 gives us 4096 because every square can theoretically be threatened by 2 pieces max.
+
+2. in line 61 the purpose of boardDuplicate is to create a temporary copy of the chessboard for simulating moves without affecting the actual game state.
+
+3. line 65 calls mainmenu with argument of option to choose the the next step and if the function returns empty (void) then option is 3 so we finally check it to return 0 to exit.
+
+4. in line 73 we initialize a board.
+
+5. then we print it in line 75.
+
+6. the loop depends on the bool state of the matchOver if false the game continues.
+
+7. the variable nsquares in the code is used to store the number of prohibited squares for the king's movement during the game and these prohibited squares are positions on the chessboard where the king cannot move because they are threatened by an opponent's piece.
+
+8. movementCount keeps track of whose turn it is and ensures the correct rules and logic are applied for each player’s move
+it is essential for alternating turns and enforcing chess rules for both players.
+
+9. lines 91 & 92 checks fro two things first if the king is checked and the prohibited moves for it to move to.
+
+10. if checked is true then the king is checked so we enter the if statement and check if the king is check mated? if yes the matchover value will turn to true and so we end the game and we determin the winner by getting the remainder of movementcount if it is even black wins if odd white wins, if the matchover is false then the game continues and we have to free the king, if the checked is false we check if the king is mated if yes we print draw because then we don't have any other moves to play.
+
+11. now, let's handle the movement, first we check if the match is not over then we call the askmovement function, aftr that we can see an if statement it is a developer command to check the prohibited moves and prints it to the console to activate it we would hve to input F f -1, then it asks for the move again.
+ 
+12. then we enter the coordstranslator which converts rows and columns into array index.
+
+13. then we entr the islegid function to change isItLegit to false if it isn't and true if it was.
+
+14. we copy the board into another one called boardDuplicate so we can test if the intended movement is valid for the king not to be checked.
+
+15. we set futurecheck bool variable to false as default.
+
+16. then check if the move makes the king checked.
+
+17. finally in the if statement we make sure that matchover and then we update the board and print it and check if the pawn is able to promotion then print it.
+
+NOTE: lines to be mod. in main (96,98,100,103,108,133,153) we will add the language options to it. 
