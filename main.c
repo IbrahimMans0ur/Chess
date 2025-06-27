@@ -1,4 +1,4 @@
-// --- Include necessary libraries for graphics, sound, and utilities ---
+// ### Include necessary libraries for graphics, sound, and utilities ###
 #include <GL/glew.h>            // GLEW library for managing OpenGL extensions
 #include <GL/freeglut.h>        // FreeGLUT for windowing and OpenGL context
 #include <stdio.h>              // Standard I/O for printing messages
@@ -12,11 +12,11 @@
 #pragma comment(lib, "user32.lib") // Link user32 library for Windows GUI
 #pragma comment(lib, "winmm.lib")  // Link winmm library for sound
 
-// --- Constants for board and colors ---
+// Constants for board and colors
 #define BOARD_SIZE 8            // Number of squares per side on the chessboard
 #define SQUARE_SIZE 87          // Pixel size of each square (700px / 8 squares = 87.5px, rounded to 87px , thats why we can see the black line at the right edge it is about 4px wide, but it is not a problem for the game logic)
 
-// --- Data structures and global variables ---
+// Data structures and global variables
 typedef struct {
     int row, col;               // Structure to hold board coordinates
 } T_Coordinates;
@@ -40,16 +40,16 @@ bool whiteKingMoved = false, blackKingMoved = false;
 bool whiteKingsideRookMoved = false, whiteQueensideRookMoved = false;
 bool blackKingsideRookMoved = false, blackQueensideRookMoved = false;
 
-// --- Add these global variables ---
+// Game state management
 int gameState = 0; // 0 = menu, 1 = game, 2 = credits
 int starter = 0;   // 0 = white, 1 = black
 
-// --- Helper function to check if mouse is inside a rectangle ---
+// Check if mouse is inside a rectangle function to help with button clicks
 bool inRect(int mx, int my, int x, int y, int w, int h) {
     return mx >= x && mx <= x + w && my >= y && my <= y + h;
 }
 
-// --- Function prototypes ---
+// ### Function prototypes ###
 bool isLegalMove(int board[8][8], int fromRow, int fromCol, int toRow, int toCol, int currentPlayer); // Checks if a move is legal
 bool isInCheck(int board[8][8], int player);      // Checks if a player is in check
 bool isCheckmate(int board[8][8], int player);    // Checks if a player is in checkmate
@@ -60,10 +60,10 @@ void reshape(int w, int h);                       // Handles window resizing and
 void updateAvailableMoves();                  // Updates the available moves for the selected piece
 GLuint loadTexture(const char* filename);         // Loads a PNG texture which is a common format for images with transparency, suitable for chess pieces
 
-// --- Draw the chessboard and pieces ---
+// ### Draw the chessboard and pieces ###
 void display(void) {
     if (gameState == 0) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT); // Clear the screen before drawing the menu
 
         // Draw menu background
         glEnable(GL_TEXTURE_2D);
@@ -104,13 +104,13 @@ void display(void) {
         glEnd();
         glColor3f(1, 1, 1);
         glRasterPos2i(320, 385);
-        char starterMsg[64];
-        sprintf(starterMsg, "%s Starts", starter == 0 ? "White" : "Black");
+        char starterMsg[18];
+        sprintf(starterMsg, "%s Starts", starter == 0 ? "White" : "Black"); // To store the starter message in the starterMsg array
         for (const char* p = starterMsg; *p; p++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *p);
 
         glutSwapBuffers();
         return;
-    } else if (gameState == 2) {
+    } else if (gameState == 2) { // This is the credits screen
         // If you don't want my credit to appear in the credit screen for any reason, you can comment the following blockof code
         glClear(GL_COLOR_BUFFER_BIT); // Clear the buffer first
 
@@ -250,7 +250,7 @@ void display(void) {
     glutSwapBuffers(); // Swap the front and back buffers (double buffering)
 }
 
-// --- Check if the current player's king is under attack ---
+// ### Check if the current player's king is under attack ###
 bool isInCheck(int board[8][8], int player) {
     int kingRow = -1, kingCol = -1; // Variables to store the king's position
     // Find the king's position for the given player
@@ -275,7 +275,7 @@ bool isInCheck(int board[8][8], int player) {
     return false; // King is safe
 }
 
-// --- Check if a move is legal for the current player ---
+// ### Check if a move is legal for the current player ###
 bool isLegalMove(int board[8][8], int fromRow, int fromCol, int toRow, int toCol, int currentPlayer) {
     int val = board[fromRow][fromCol], color = val / 10, piece = val % 10; // Get the piece type and color from the value at the starting square
     int target = board[toRow][toCol], targetColor = target / 10; // Get the target piece's color (0 for white, 1 for black) if there is a piece at the target square
@@ -301,7 +301,7 @@ bool isLegalMove(int board[8][8], int fromRow, int fromCol, int toRow, int toCol
             if (abs(dr) <= 1 && abs(dc) <= 1) return true; // King can move one square in any direction
 
 
-            // --- Castling logic ---
+            // ### Castling logic ###
             if (color == 0 && fromRow == 7 && fromCol == 4 && dr == 0) { // White king
                 // Kingside castling
                 if (dc == 2 && !whiteKingMoved && !whiteKingsideRookMoved &&
@@ -414,7 +414,7 @@ bool isLegalMove(int board[8][8], int fromRow, int fromCol, int toRow, int toCol
     return false; // If none of the piece-specific rules matched, the move is illegal
 }
 
-// --- Check if the current player is in checkmate ---
+// ### Check if the current player is in checkmate ###
 bool isCheckmate(int board[8][8], int player) {
     if (!isInCheck(board, player)) return false; // If the player is not in check, it cannot be checkmate
     // If the player is in check, we need to check if they have any legal moves to escape check
@@ -441,11 +441,14 @@ bool isCheckmate(int board[8][8], int player) {
     return true; // No legal moves to escape check
 }
 
-// --- Handle mouse clicks for selecting and moving pieces ---
+// ### Handle mouse clicks for selecting and moving pieces ###
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        // Next block will handle the menu buttons
         if (gameState == 0) {
             // GLUT y is from top, our ortho is from top, so y is fine
+
+            // HUSH!!
             if (inRect(x, y, 0, 0, 10, 10)) {
                 PlaySound("Fun.wav", NULL, SND_FILENAME | SND_ASYNC);
                 glutPostRedisplay();
@@ -470,6 +473,7 @@ void mouse(int button, int state, int x, int y) {
                 glutPostRedisplay();
                 return;
             }
+            // Next will handle the credits screen
         } else if (gameState == 2) {
             // Any click returns to menu
             gameState = 0;
@@ -477,6 +481,7 @@ void mouse(int button, int state, int x, int y) {
             return;
         }
     }
+    // If we are in the game state, handle piece selection and movement
     if (gameState == 1) {
         if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) { // Only on left click
             int col = x / SQUARE_SIZE, row = y / SQUARE_SIZE; // Convert pixel to board coordinates
@@ -498,7 +503,7 @@ void mouse(int button, int state, int x, int y) {
                             board[row][col] = movedPiece; // Move the piece to the target square
                             board[selectedRow][selectedCol] = 0; // Empty the starting square
 
-                            // --- Update castling rights for any king or rook move ---
+                            // ### Update castling rights for any king or rook move ###
                             // White king moves from e1
                             if (movedPiece == 2 && selectedRow == 7 && selectedCol == 4)
                                 whiteKingMoved = true;
@@ -518,7 +523,7 @@ void mouse(int button, int state, int x, int y) {
                             if (movedPiece == 14 && selectedRow == 0 && selectedCol == 0)
                                 blackQueensideRookMoved = true;
 
-                            // --- Castling rook move logic ---
+                            // ### Castling rook move logic ###
                             if (movedPiece % 10 == 2 && !isInCheck(board,currentPlayer)) { // King
                                 // White kingside castling
                                 if (movedPiece == 2 && selectedRow == 7 && selectedCol == 4 && row == 7 && col == 6) {
@@ -541,7 +546,7 @@ void mouse(int button, int state, int x, int y) {
                                     board[0][0] = 0;
                                 }
 
-                                // --- Update castling rights ---
+                                // ### Update castling rights ###
                                 if (movedPiece == 2) whiteKingMoved = true;
                                 if (movedPiece == 12) blackKingMoved = true;
                                 if (movedPiece == 4 && selectedRow == 7 && selectedCol == 0) whiteQueensideRookMoved = true;
@@ -551,7 +556,7 @@ void mouse(int button, int state, int x, int y) {
                             }
 
                            
-                            // --- Pawn Promotion ---
+                            // ### Pawn Promotion ###
                             int piece = movedPiece % 10;
                             int color = movedPiece / 10;
                             if (piece == 1) { // If the moved piece is a pawn
@@ -591,7 +596,7 @@ void mouse(int button, int state, int x, int y) {
     }
 }
 
-// --- Set up the initial chessboard position ---
+// ### Set up the initial chessboard position ###
 void boardInitializer(int board[8][8]) {
     // Standard chess starting position, encoded as integers
     int chessBoard[8][8] = {
@@ -610,12 +615,12 @@ void boardInitializer(int board[8][8]) {
             board[i][j] = chessBoard[i][j];
 }
 
-// --- Force window size back to 700x700 ---
+// ### Force window size back to 700x700 ###
 void reshape(int w, int h) {
     glutReshapeWindow(700, 700); // Always keep window square and fixed size
 }
 
-// --- Load texture from file ---
+// ### Load texture from file ###
 GLuint loadTexture(const char* filename) { // Load a PNG texture from file
     // Use stb_image to load the PNG file
     int width, height, channels; // Variables to hold image dimensions and channels
@@ -635,7 +640,7 @@ GLuint loadTexture(const char* filename) { // Load a PNG texture from file
     return tex; // Return texture handle
 }
 
-// --- Update available moves for the selected piece ---
+// ### Update available moves for the selected piece ###
 void updateAvailableMoves() {
     // Clear previous highlights
     for (int i = 0; i < BOARD_SIZE; i++)
@@ -674,7 +679,7 @@ void updateAvailableMoves() {
         }
 }
 
-// --- Main function: initializes everything and starts the game loop ---
+// ### Main function: initializes everything and starts the game loop ###
 int main(int argc, char **argv) {
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA); // Double buffering, RGBA color
